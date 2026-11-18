@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { getMovies, deleteMovie } from '../services/api';
+import { getMovies } from '../services/api';
 import { Movie } from '../types/movie';
 import { MovieItem } from './MovieItem';
 
-export function MovieList() {
+interface MovieListProps {
+  refreshKey: number;
+}
+
+export function MovieList({ refreshKey }: MovieListProps) {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,18 +24,9 @@ export function MovieList() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteMovie(id);
-      setMovies(movies.filter((m) => m.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete movie');
-    }
-  };
-
   useEffect(() => {
     loadMovies();
-  }, []);
+  }, [refreshKey]);
 
   if (loading) {
     return <div className="empty-state">Loading movies...</div>;

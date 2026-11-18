@@ -4,6 +4,7 @@ import { MovieList } from './components/MovieList';
 
 export default function App() {
   const [showForm, setShowForm] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <div className="app-container">
@@ -18,9 +19,9 @@ export default function App() {
         </button>
       </header>
 
-      {showForm && <MovieForm onAdd={() => {}} />}
+      {showForm && <MovieForm onAdd={() => setRefreshKey(k => k + 1)} />}
 
-      <MovieList />
+      <MovieList refreshKey={refreshKey} />
     </div>
   );
 }

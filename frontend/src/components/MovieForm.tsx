@@ -6,8 +6,17 @@ interface MovieFormProps {
   onAdd: () => void;
 }
 
+interface FormState {
+  title: string;
+  director: string;
+  year: string;
+  rating: string;
+  watched: boolean;
+  notes: string;
+}
+
 export function MovieForm({ onAdd }: MovieFormProps) {
-  const [form, setForm] = useState<NewMovie>({
+  const [form, setForm] = useState<FormState>({
     title: '',
     director: '',
     year: '',
