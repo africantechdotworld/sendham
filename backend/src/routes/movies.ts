@@ -16,7 +16,7 @@ router.get('/', async (_req, res) => {
 
 // POST /api/movies — create a movie
 router.post('/', async (req, res) => {
-  const { title, director, year, rating, watched, notes } = req.body;
+  const { title, director, year, rating, watched, watch_status, notes } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
@@ -25,12 +25,13 @@ router.post('/', async (req, res) => {
   const db = await openDb();
   try {
     const result = await db.run(
-      'INSERT INTO movies (title, director, year, rating, watched, notes) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO movies (title, director, year, rating, watched, watch_status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
       title,
       director || null,
       year || null,
       rating || null,
       watched ? 1 : 0,
+      watch_status || null,
       notes || null
     );
     const movie = await db.get('SELECT * FROM movies WHERE id = ?', result.lastID);
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
 // PUT /api/movies/:id — update a movie
 router.put('/:id', async (req, res) => {
   const id = Number(req.params.id);
-  const { title, director, year, rating, watched, notes } = req.body;
+  const { title, director, year, rating, watched, watch_status, notes } = req.body;
 
   const db = await openDb();
   try {
@@ -53,12 +54,13 @@ router.put('/:id', async (req, res) => {
     }
 
     await db.run(
-      'UPDATE movies SET title = ?, director = ?, year = ?, rating = ?, watched = ?, notes = ? WHERE id = ?',
+      'UPDATE movies SET title = ?, director = ?, year = ?, rating = ?, watched = ?, watch_status = ?, notes = ? WHERE id = ?',
       title ?? existing.title,
       director !== undefined ? director : existing.director,
       year !== undefined ? year : existing.year,
       rating !== undefined ? rating : existing.rating,
       watched !== undefined ? (watched ? 1 : 0) : existing.watched,
+      watch_status !== undefined ? watch_status : existing.watch_status,
       notes !== undefined ? notes : existing.notes,
       id
     );

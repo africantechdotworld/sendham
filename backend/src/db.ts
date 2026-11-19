@@ -18,8 +18,33 @@ export async function initDb() {
       year INTEGER,
       rating REAL,
       watched INTEGER DEFAULT 0,
+      watch_status TEXT,
       notes TEXT,
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS ratings (
+      movie_id INTEGER PRIMARY KEY,
+      rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 10),
+      updatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
+    )
+  `);
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS watchlists (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS watchlist_items (
+      watchlist_id INTEGER NOT NULL,
+      movie_id INTEGER NOT NULL,
+      PRIMARY KEY (watchlist_id, movie_id),
+      FOREIGN KEY (watchlist_id) REFERENCES watchlists(id) ON DELETE CASCADE,
+      FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
     )
   `);
   await db.close();
